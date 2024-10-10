@@ -7,7 +7,7 @@ pub use source::*;
 use serde::Serialize;
 
 pub fn config_to_mcf_json_value(mcf: &crate::Configuration) -> serde_json::Value {
-    serde_json::to_value(&model_to_serializable(mcf)).expect("Failed to render JSON.")
+    serde_json::to_value(model_to_serializable(mcf)).expect("Failed to render JSON.")
 }
 
 #[derive(Debug, Serialize)]

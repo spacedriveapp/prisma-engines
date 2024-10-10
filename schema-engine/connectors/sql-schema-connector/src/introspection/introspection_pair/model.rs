@@ -74,7 +74,7 @@ impl<'a> ModelPair<'a> {
     }
 
     pub(crate) fn expression_indexes(self) -> impl Iterator<Item = &'a str> {
-        let mut indexes: Option<&Vec<(TableId, String)>> = None;
+        let indexes: Option<&Vec<(TableId, String)>> = None;
 
         #[cfg(feature = "postgresql")]
         if self.context.sql_family().is_postgres() {

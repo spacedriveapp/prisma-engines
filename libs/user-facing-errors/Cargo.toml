@@ -7,10 +7,10 @@ edition = "2021"
 user-facing-error-macros = { path = "../user-facing-error-macros" }
 serde_json.workspace = true
 serde.workspace = true
-backtrace = "0.3.40"
+backtrace = "0.3.74"
 tracing = "0.1"
 indoc.workspace = true
-itertools = "0.10"
+itertools = "0.13"
 quaint = { workspace = true, optional = true }
 
 [features]

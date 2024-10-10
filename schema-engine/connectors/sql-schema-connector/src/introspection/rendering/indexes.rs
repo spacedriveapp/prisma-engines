@@ -1,6 +1,6 @@
 //! Rendering of model level index definitions.
 
-use crate::introspection::introspection_pair::{IndexOps, IndexPair};
+use crate::introspection::introspection_pair::IndexPair;
 use datamodel_renderer::datamodel as renderer;
 use sql_schema_describer as sql;
 

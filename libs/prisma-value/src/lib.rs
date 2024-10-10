@@ -2,6 +2,8 @@ pub mod arithmetic;
 
 mod error;
 
+use base64::engine::general_purpose::STANDARD as base64;
+use base64::Engine;
 use bigdecimal::{BigDecimal, FromPrimitive, ToPrimitive};
 use chrono::prelude::*;
 use serde::de::Unexpected;
@@ -62,11 +64,13 @@ pub fn parse_datetime(datetime: &str) -> chrono::ParseResult<DateTime<FixedOffse
 }
 
 pub fn encode_bytes(bytes: &[u8]) -> String {
-    base64::encode(bytes)
+    base64.encode(bytes)
 }
 
 pub fn decode_bytes(s: &str) -> PrismaValueResult<Vec<u8>> {
-    base64::decode(s).map_err(|_| ConversionFailure::new("base64 encoded bytes", "PrismaValue::Bytes"))
+    base64
+        .decode(s)
+        .map_err(|_| ConversionFailure::new("base64 encoded bytes", "PrismaValue::Bytes"))
 }
 
 impl TryFrom<serde_json::Value> for PrismaValue {

@@ -78,7 +78,7 @@ fn handle_compound_field(fields: Vec<ScalarFieldRef>, value: ParsedInputValue<'_
     let filters: Vec<Filter> = fields
         .into_iter()
         .map(|sf| {
-            let pv: PrismaValue = input_map.remove(sf.name()).unwrap().try_into()?;
+            let pv: PrismaValue = input_map.shift_remove(sf.name()).unwrap().try_into()?;
             Ok(sf.equals(pv))
         })
         .collect::<QueryGraphBuilderResult<Vec<_>>>()?;
@@ -280,7 +280,7 @@ fn extract_scalar_filters(field: &ScalarFieldRef, value: ParsedInputValue<'_>) -
     match value {
         ParsedInputValue::Single(pv) => Ok(vec![field.equals(pv)]),
         ParsedInputValue::Map(mut filter_map) => {
-            let mode = match filter_map.remove(filters::MODE) {
+            let mode = match filter_map.shift_remove(filters::MODE) {
                 Some(i) => parse_query_mode(i)?,
                 None => QueryMode::Default,
             };
@@ -314,7 +314,7 @@ fn extract_relation_filters(
 
         // Implicit is
         ParsedInputValue::Map(filter_map) => {
-            extract_filter(filter_map, &field.related_model()).map(|filter| vec![field.to_one_related(filter)])
+            extract_filter(filter_map, field.related_model()).map(|filter| vec![field.to_one_related(filter)])
         }
 
         x => Err(QueryGraphBuilderError::InputError(format!(

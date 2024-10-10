@@ -1,9 +1,0 @@
-{
-    "action": "findMany",
-    "modelName": "User",
-    "query": {
-        "selection": {
-            "notAField": true
-        }
-    }
-}

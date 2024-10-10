@@ -23,7 +23,7 @@ pub(crate) use common::IteratorJoin;
 use self::common::{Quoted, QuotedWithPrefix};
 use crate::{
     migration_pair::MigrationPair,
-    sql_migration::{self, AlterEnum, AlterTable, RedefineTable, SequenceChanges},
+    sql_migration::{AlterEnum, AlterTable, RedefineTable, SequenceChanges},
 };
 use sql_schema_describer::{
     self as sql,

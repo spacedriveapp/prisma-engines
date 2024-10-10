@@ -174,13 +174,27 @@ impl<'a> GetRow for SqliteRow<'a> {
                         }
                         #[cfg(feature = "chrono")]
                         c if c.is_date() => {
-                            let dt = chrono::NaiveDateTime::from_timestamp_opt(i / 1000, 0).unwrap();
+                            let dt = chrono::DateTime::from_timestamp(i / 1000, 0)
+                                .expect("Invalid date")
+                                .naive_utc();
                             Value::date(dt.date())
                         }
                         #[cfg(feature = "chrono")]
                         c if c.is_datetime() => {
-                            let dt = chrono::Utc.timestamp_millis_opt(i).unwrap();
-                            Value::datetime(dt)
+                            let dt = chrono::Utc.timestamp_millis_opt(i);
+                            match dt {
+                                chrono::LocalResult::Single(datetime) => Value::datetime(datetime),
+                                chrono::LocalResult::None => {
+                                    let msg = format!("Invalid timestamp: {}", i);
+                                    let kind = ErrorKind::conversion(msg);
+                                    return Err(Error::builder(kind).build());
+                                }
+                                chrono::LocalResult::Ambiguous(_, _) => {
+                                    let msg = format!("Ambiguous timestamp: {}", i);
+                                    let kind = ErrorKind::conversion(msg);
+                                    return Err(Error::builder(kind).build());
+                                }
+                            }
                         }
                         c if c.is_int32() => {
                             if let Ok(converted) = i32::try_from(i) {
@@ -214,7 +228,7 @@ impl<'a> GetRow for SqliteRow<'a> {
 
                     parse_res.and_then(|s| {
                         chrono::NaiveDateTime::parse_from_str(s, "%Y-%m-%d %H:%M:%S")
-                            .map(|nd| chrono::DateTime::<chrono::Utc>::from_utc(nd, chrono::Utc))
+                            .map(|nd| chrono::DateTime::<chrono::Utc>::from_naive_utc_and_offset(nd, chrono::Utc))
                             .or_else(|_| {
                                 chrono::DateTime::parse_from_rfc3339(s).map(|dt| dt.with_timezone(&chrono::Utc))
                             })
@@ -290,7 +304,7 @@ impl<'a> ToSql for Value<'a> {
             #[cfg(feature = "chrono")]
             Value::Date(date) => date
                 .and_then(|date| date.and_hms_opt(0, 0, 0))
-                .map(|dt| ToSqlOutput::from(dt.timestamp_millis())),
+                .map(|dt| ToSqlOutput::from(dt.and_utc().timestamp_millis())),
             #[cfg(feature = "chrono")]
             Value::Time(time) => time
                 .and_then(|time| chrono::NaiveDate::from_ymd_opt(1970, 1, 1).map(|d| (d, time)))
@@ -298,7 +312,7 @@ impl<'a> ToSql for Value<'a> {
                     use chrono::Timelike;
                     date.and_hms_opt(time.hour(), time.minute(), time.second())
                 })
-                .map(|dt| ToSqlOutput::from(dt.timestamp_millis())),
+                .map(|dt| ToSqlOutput::from(dt.and_utc().timestamp_millis())),
         };
 
         match value {

@@ -12,7 +12,7 @@ pub(super) fn render<'a>(
 ) -> render::Configuration<'a> {
     let mut output = render::Configuration::default();
     let prev_ds = config.datasources.first().unwrap();
-    let mut datasource = render::configuration::Datasource::from_psl(prev_ds, force_namespaces);
+    let datasource = render::configuration::Datasource::from_psl(prev_ds, force_namespaces);
 
     #[cfg(feature = "postgresql")]
     if prev_ds.active_connector.is_provider("postgres") {

@@ -217,10 +217,10 @@ fn extract_order_by_args(
 ) -> QueryGraphBuilderResult<(SortOrder, Option<NullsOrder>)> {
     match field_value {
         ParsedInputValue::Map(mut map) => {
-            let sort: PrismaValue = map.remove(ordering::SORT).unwrap().try_into()?;
+            let sort: PrismaValue = map.shift_remove(ordering::SORT).unwrap().try_into()?;
             let sort = pv_to_sort_order(sort)?;
             let nulls = map
-                .remove(ordering::NULLS)
+                .shift_remove(ordering::NULLS)
                 .map(PrismaValue::try_from)
                 .transpose()?
                 .map(pv_to_nulls_order)
@@ -324,7 +324,7 @@ fn extract_compound_cursor_field(
     let mut pairs = vec![];
 
     for field in fields {
-        let value = map.remove(field.name()).unwrap();
+        let value = map.shift_remove(field.name()).unwrap();
         pairs.extend(extract_cursor_field(field, value)?);
     }
 

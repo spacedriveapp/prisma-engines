@@ -1,5 +1,7 @@
 use std::fmt::Debug;
 
+use base64::engine::general_purpose::STANDARD as base64;
+use base64::Engine;
 use either::Either::{Left, Right};
 use psl::datamodel_connector::Connector;
 use psl::diagnostics::DatamodelWarning;
@@ -606,7 +608,7 @@ impl DefaultValueAssert for ast::Expression {
     #[track_caller]
     fn assert_bytes(&self, expected: &[u8]) -> &Self {
         match self {
-            ast::Expression::StringValue(actual, _) => assert_eq!(base64::decode(actual).unwrap(), expected),
+            ast::Expression::StringValue(actual, _) => assert_eq!(base64.decode(actual).unwrap(), expected),
             _ => panic!("Not a bytes value"),
         }
 

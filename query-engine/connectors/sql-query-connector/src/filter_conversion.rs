@@ -3,7 +3,6 @@ use connector_interface::filter::*;
 use prisma_models::prelude::*;
 use quaint::ast::concat;
 use quaint::ast::*;
-use std::convert::TryInto;
 
 #[derive(Clone, Copy, Debug)]
 /// A distinction in aliasing to separate the parent table and the joined data

@@ -2,17 +2,11 @@ use super::update::*;
 use crate::column_metadata;
 use crate::filter_conversion::AliasedCondition;
 use crate::row::ToSqlRow;
-use crate::{
-    error::SqlError, model_extensions::*, query_builder::write, sql_trace::SqlTraceComment, Context, QueryExt,
-    Queryable,
-};
+use crate::{error::SqlError, model_extensions::*, query_builder::write, Context, QueryExt, Queryable};
 use connector_interface::*;
 use itertools::Itertools;
 use prisma_models::*;
-use quaint::{
-    error::ErrorKind,
-    prelude::{Aliasable, Select, SqlFamily},
-};
+use quaint::{error::ErrorKind, prelude::SqlFamily};
 use std::{
     collections::{HashMap, HashSet},
     ops::Deref,
@@ -72,7 +66,7 @@ pub(crate) async fn create_record(
     conn: &dyn Queryable,
     sql_family: &SqlFamily,
     model: &Model,
-    mut args: WriteArgs,
+    args: WriteArgs,
     selected_fields: FieldSelection,
     ctx: &Context<'_>,
 ) -> crate::Result<SingleRecord> {

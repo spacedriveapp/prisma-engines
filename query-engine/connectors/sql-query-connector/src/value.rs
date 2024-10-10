@@ -59,15 +59,15 @@ pub fn to_prisma_value(quaint_value: Value<'_>) -> crate::Result<PrismaValue> {
 
         Value::Date(d) => d
             .map(|d| {
-                let dt = DateTime::<Utc>::from_utc(d.and_hms(0, 0, 0), Utc);
+                let dt = DateTime::<Utc>::from_naive_utc_and_offset(d.and_hms_opt(0, 0, 0).expect("Invalid date"), Utc);
                 PrismaValue::DateTime(dt.into())
             })
             .unwrap_or(PrismaValue::Null),
 
         Value::Time(t) => t
             .map(|t| {
-                let d = NaiveDate::from_ymd(1970, 1, 1);
-                let dt = DateTime::<Utc>::from_utc(d.and_time(t), Utc);
+                let d = NaiveDate::from_ymd_opt(1970, 1, 1).expect("Invalid date");
+                let dt = DateTime::<Utc>::from_naive_utc_and_offset(d.and_time(t), Utc);
                 PrismaValue::DateTime(dt.into())
             })
             .unwrap_or(PrismaValue::Null),
