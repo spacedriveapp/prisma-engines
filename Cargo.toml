@@ -1,6 +1,7 @@
 [workspace]
 resolver = "2"
 members = [
+  "schema-engine/core",
   "schema-engine/connectors/*",
   "schema-engine/datamodel-renderer",
   "schema-engine/sql-schema-describer",

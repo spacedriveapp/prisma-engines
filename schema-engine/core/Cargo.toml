@@ -6,7 +6,7 @@ version = "0.1.0"
 [dependencies]
 psl.workspace = true
 schema-connector = { path = "../connectors/schema-connector" }
-mongodb-schema-connector = { path = "../connectors/mongodb-schema-connector", optional = true }
+# mongodb-schema-connector = { path = "../connectors/mongodb-schema-connector", optional = true }
 sql-schema-connector = { path = "../connectors/sql-schema-connector", optional = true }
 user-facing-errors = { path = "../../libs/user-facing-errors" }
 
@@ -32,4 +32,4 @@ postgresql = ["sql", "sql-schema-connector/postgresql"]
 sqlite = ["sql", "sql-schema-connector/sqlite"]
 mysql = ["sql", "sql-schema-connector/mysql"]
 mssql = ["sql", "sql-schema-connector/mssql"]
-mongodb = ["mongodb-schema-connector"]
+mongodb = []
