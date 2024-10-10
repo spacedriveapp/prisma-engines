@@ -36,7 +36,7 @@ where
             let query_fmt = sqlformat::format(
                 query,
                 &sqlformat::QueryParams::None,
-                &sqlformat::FormatOptions::default(),
+                sqlformat::FormatOptions::default(),
             );
 
             trace_query(&query_fmt, params, result, start);
