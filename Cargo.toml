@@ -5,6 +5,7 @@ members = [
   "schema-engine/datamodel-renderer",
   "schema-engine/sql-schema-describer",
   "query-engine/connectors/*",
+  "schema-engine/json-rpc-api-build",
   "query-engine/core",
   "query-engine/dmmf",
   "query-engine/metrics",
