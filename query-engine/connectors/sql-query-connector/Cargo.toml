@@ -27,7 +27,7 @@ tracing = { version = "0.1", features = ["log"] }
 tracing-futures = "0.2"
 uuid.workspace = true
 opentelemetry = { version = "0.17", features = ["tokio"] }
-tracing-opentelemetry = "0.17.3"
+tracing-opentelemetry = "0.17.4"
 quaint.workspace = true
 
 [dependencies.connector-interface]

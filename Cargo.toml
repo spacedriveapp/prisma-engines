@@ -11,6 +11,7 @@ members = [
   "query-engine/dmmf",
   "query-engine/metrics",
   "query-engine/prisma-models",
+  "query-engine/request-handlers",
   "query-engine/schema",
   "libs/*",
   "psl/*",
