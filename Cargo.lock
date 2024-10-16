@@ -3151,13 +3151,11 @@ dependencies = [
 
 [[package]]
 name = "sqlformat"
-version = "0.3.0"
+version = "0.2.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4565f2e36a05369efe8bf4f7fe0b531710c66dd1b339b50eb83f02ec1863a9c1"
+checksum = "7bba3a93db0cc4f7bdece8bb09e77e2e785c20bfebf79eb8340ed80708048790"
 dependencies = [
  "nom",
- "once_cell",
- "regex",
  "unicode_categories",
 ]
 
