@@ -1,6 +1,6 @@
 use crate::{
     cursor_condition, filter_conversion::AliasedCondition, model_extensions::*, nested_aggregations,
-    ordering::OrderByBuilder, sql_trace::SqlTraceComment, Context,
+    ordering::OrderByBuilder, Context,
 };
 use connector_interface::{filter::Filter, AggregationSelection, QueryArguments, RelAggregationSelection};
 use itertools::Itertools;
@@ -90,9 +90,7 @@ impl SelectDefinition for QueryArguments {
 
         let select_ast = Select::from_table(joined_table)
             .so_that(conditions)
-            .offset(skip as usize)
-            .append_trace(&Span::current())
-            .add_trace_id(ctx.trace_id);
+            .offset(skip as usize);
 
         let select_ast = order_by_definitions
             .iter()
@@ -117,8 +115,6 @@ where
 {
     let (select, additional_selection_set) = query.into_select(model, aggr_selections, ctx);
     let select = columns.fold(select, |acc, col| acc.column(col));
-
-    let select = select.append_trace(&Span::current()).add_trace_id(ctx.trace_id);
 
     additional_selection_set
         .into_iter()
@@ -161,11 +157,9 @@ pub(crate) fn aggregate(
     let sub_query = get_records(model, columns.into_iter(), &[], args, ctx);
     let sub_table = Table::from(sub_query).alias("sub");
 
-    selections.iter().fold(
-        Select::from_table(sub_table)
-            .append_trace(&Span::current())
-            .add_trace_id(ctx.trace_id),
-        |select, next_op| match next_op {
+    selections
+        .iter()
+        .fold(Select::from_table(sub_table), |select, next_op| match next_op {
             AggregationSelection::Field(field) => select.column(Column::from(field.db_name().to_owned())),
 
             AggregationSelection::Count { all, fields } => {
@@ -195,8 +189,7 @@ pub(crate) fn aggregate(
             AggregationSelection::Max(fields) => fields.iter().fold(select, |select, next_field| {
                 select.value(max(Column::from(next_field.db_name().to_owned())))
             }),
-        },
-    )
+        })
 }
 
 pub(crate) fn group_by_aggregate(
@@ -241,10 +234,9 @@ pub(crate) fn group_by_aggregate(
         }),
     });
 
-    let grouped = group_by.into_iter().fold(
-        select_query.append_trace(&Span::current()).add_trace_id(ctx.trace_id),
-        |query, field| query.group_by(field.as_column(ctx)),
-    );
+    let grouped = group_by
+        .into_iter()
+        .fold(select_query, |query, field| query.group_by(field.as_column(ctx)));
 
     match having {
         Some(filter) => grouped.having(filter.aliased_condition_from(None, false, ctx)),

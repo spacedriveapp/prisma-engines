@@ -1,4 +1,4 @@
-use crate::{model_extensions::*, sql_trace::SqlTraceComment, Context};
+use crate::{model_extensions::*, Context};
 use connector_interface::{DatasourceFieldName, ScalarWriteOperation, WriteArgs};
 use prisma_models::*;
 use quaint::ast::*;
@@ -36,7 +36,7 @@ pub(crate) fn create_record(
     #[cfg(any(feature = "postgresql", feature = "mssql", feature = "sqlite"))]
     let insert = insert.returning(selected_fields.as_columns(ctx));
 
-    insert.append_trace(&Span::current()).add_trace_id(ctx.trace_id)
+    insert
 }
 
 /// `INSERT` new records into the database based on the given write arguments,
@@ -85,7 +85,6 @@ pub(crate) fn create_records_nonempty(
     let insert = Insert::multi_into(model.as_table(ctx), columns);
     let insert = values.into_iter().fold(insert, |stmt, values| stmt.values(values));
     let insert: Insert = insert.into();
-    let insert = insert.append_trace(&Span::current()).add_trace_id(ctx.trace_id);
 
     if skip_duplicates {
         insert.on_conflict(OnConflict::DoNothing)
@@ -97,7 +96,6 @@ pub(crate) fn create_records_nonempty(
 /// `INSERT` empty records statement.
 pub(crate) fn create_records_empty(model: &Model, skip_duplicates: bool, ctx: &Context<'_>) -> Insert<'static> {
     let insert: Insert<'static> = Insert::single_into(model.as_table(ctx)).into();
-    let insert = insert.append_trace(&Span::current()).add_trace_id(ctx.trace_id);
 
     if skip_duplicates {
         insert.on_conflict(OnConflict::DoNothing)
@@ -163,8 +161,6 @@ pub(crate) fn build_update_and_set_query(
             acc.set(name, value)
         });
 
-    let query = query.append_trace(&Span::current()).add_trace_id(ctx.trace_id);
-
     let query = if let Some(selected_fields) = selected_fields {
         #[cfg(any(feature = "postgresql", feature = "sqlite"))]
         {
@@ -208,10 +204,7 @@ pub(crate) fn delete_many(
         .collect();
 
     super::chunked_conditions(&columns, ids, |conditions| {
-        Delete::from_table(model.as_table(ctx))
-            .so_that(conditions.and(filter_condition.clone()))
-            .append_trace(&Span::current())
-            .add_trace_id(ctx.trace_id)
+        Delete::from_table(model.as_table(ctx)).so_that(conditions.and(filter_condition.clone()))
     })
 }
 
@@ -260,8 +253,5 @@ pub(crate) fn delete_relation_table_records(
 
     let child_id_criteria = super::in_conditions(&child_columns, child_ids);
 
-    Delete::from_table(relation.as_table(ctx))
-        .so_that(parent_id_criteria.and(child_id_criteria))
-        .append_trace(&Span::current())
-        .add_trace_id(ctx.trace_id)
+    Delete::from_table(relation.as_table(ctx)).so_that(parent_id_criteria.and(child_id_criteria))
 }

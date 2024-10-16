@@ -33,11 +33,11 @@ pub(crate) trait IntrospectionFlavour {
 
     fn format_view_definition(&self, definition: &str) -> String {
         let opts = sqlformat::FormatOptions {
-            uppercase: true,
+            uppercase: Some(true),
             ..Default::default()
         };
 
-        sqlformat::format(definition, &Default::default(), opts)
+        sqlformat::format(definition, &Default::default(), &opts)
     }
 
     fn generate_warnings(&self, _ctx: &DatamodelCalculatorContext<'_>, _warnings: &mut Warnings) {}

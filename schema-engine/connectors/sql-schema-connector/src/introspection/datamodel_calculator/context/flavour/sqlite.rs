@@ -29,10 +29,10 @@ impl super::IntrospectionFlavour for SqliteIntrospectionFlavour {
         };
 
         let opts = sqlformat::FormatOptions {
-            uppercase: true,
+            uppercase: Some(true),
             ..Default::default()
         };
 
-        sqlformat::format(&definition, &Default::default(), opts)
+        sqlformat::format(&definition, &Default::default(), &opts)
     }
 }
