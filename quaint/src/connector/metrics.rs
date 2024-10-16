@@ -50,10 +50,6 @@ where
         trace_query(query, params, result, start);
     }
 
-    histogram!(format!("{tag}.query.time"), start.elapsed());
-    histogram!("prisma_datasource_queries_duration_histogram_ms", start.elapsed());
-    increment_counter!("prisma_datasource_queries_total");
-
     res
 }
 
@@ -77,8 +73,6 @@ where
         is_query = true,
         result,
     );
-
-    histogram!("pool.check_out", start.elapsed());
 
     res
 }

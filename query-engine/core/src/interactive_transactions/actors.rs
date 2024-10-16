@@ -1,7 +1,7 @@
 use super::{CachedTx, TransactionError, TxOpRequest, TxOpRequestMsg, TxOpResponse};
 use crate::{
-    execute_many_operations, execute_single_operation, protocol::EngineProtocol,
-    telemetry::helpers::set_span_link_from_traceparent, ClosedTx, Operation, ResponseData, TxId,
+    execute_many_operations, execute_single_operation, protocol::EngineProtocol, ClosedTx, Operation, ResponseData,
+    TxId,
 };
 use connector::Connection;
 use schema::QuerySchemaRef;
@@ -81,7 +81,6 @@ impl<'a> ITXServer<'a> {
         traceparent: Option<String>,
     ) -> crate::Result<ResponseData> {
         let span = info_span!("prisma:engine:itx_query_builder", user_facing = true);
-        set_span_link_from_traceparent(&span, traceparent.clone());
 
         let conn = self.cached_tx.as_open()?;
         execute_single_operation(

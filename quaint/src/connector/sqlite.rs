@@ -6,7 +6,7 @@ pub use rusqlite::{params_from_iter, version as sqlite_version};
 use super::IsolationLevel;
 use crate::{
     ast::{Query, Value},
-    connector::{metrics, queryable::*, ResultSet},
+    connector::{queryable::*, ResultSet},
     error::{Error, ErrorKind},
     visitor::{self, Visitor},
 };
@@ -177,23 +177,20 @@ impl Queryable for Sqlite {
     }
 
     async fn query_raw(&self, sql: &str, params: &[Value<'_>]) -> crate::Result<ResultSet> {
-        metrics::query("sqlite.query_raw", sql, params, move || async move {
-            let client = self.client.lock().await;
+        let client = self.client.lock().await;
 
-            let mut stmt = client.prepare_cached(sql)?;
+        let mut stmt = client.prepare_cached(sql)?;
 
-            let mut rows = stmt.query(params_from_iter(params.iter()))?;
-            let mut result = ResultSet::new(rows.to_column_names(), Vec::new());
+        let mut rows = stmt.query(params_from_iter(params.iter()))?;
+        let mut result = ResultSet::new(rows.to_column_names(), Vec::new());
 
-            while let Some(row) = rows.next()? {
-                result.rows.push(row.get_result_row()?);
-            }
+        while let Some(row) = rows.next()? {
+            result.rows.push(row.get_result_row()?);
+        }
 
-            result.set_last_insert_id(u64::try_from(client.last_insert_rowid()).unwrap_or(0));
+        result.set_last_insert_id(u64::try_from(client.last_insert_rowid()).unwrap_or(0));
 
-            Ok(result)
-        })
-        .await
+        Ok(result)
     }
 
     async fn query_raw_typed(&self, sql: &str, params: &[Value<'_>]) -> crate::Result<ResultSet> {
@@ -206,14 +203,11 @@ impl Queryable for Sqlite {
     }
 
     async fn execute_raw(&self, sql: &str, params: &[Value<'_>]) -> crate::Result<u64> {
-        metrics::query("sqlite.query_raw", sql, params, move || async move {
-            let client = self.client.lock().await;
-            let mut stmt = client.prepare_cached(sql)?;
-            let res = u64::try_from(stmt.execute(params_from_iter(params.iter()))?)?;
+        let client = self.client.lock().await;
+        let mut stmt = client.prepare_cached(sql)?;
+        let res = u64::try_from(stmt.execute(params_from_iter(params.iter()))?)?;
 
-            Ok(res)
-        })
-        .await
+        Ok(res)
     }
 
     async fn execute_raw_typed(&self, sql: &str, params: &[Value<'_>]) -> crate::Result<u64> {
@@ -221,12 +215,9 @@ impl Queryable for Sqlite {
     }
 
     async fn raw_cmd(&self, cmd: &str) -> crate::Result<()> {
-        metrics::query("sqlite.raw_cmd", cmd, &[], move || async move {
-            let client = self.client.lock().await;
-            client.execute_batch(cmd)?;
-            Ok(())
-        })
-        .await
+        let client = self.client.lock().await;
+        client.execute_batch(cmd)?;
+        Ok(())
     }
 
     async fn version(&self) -> crate::Result<Option<String>> {

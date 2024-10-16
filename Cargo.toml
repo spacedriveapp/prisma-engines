@@ -9,7 +9,6 @@ members = [
   "schema-engine/json-rpc-api-build",
   "query-engine/core",
   "query-engine/dmmf",
-  "query-engine/metrics",
   "query-engine/prisma-models",
   "query-engine/request-handlers",
   "query-engine/schema",
@@ -30,8 +29,6 @@ user-facing-errors = { path = "./libs/user-facing-errors" }
 uuid = { version = "1", features = ["serde"] }
 indoc = "2.0.5"
 connection-string = "0.2"
-napi = { version = "2.16.11", default-features = false, features = ["napi8", "tokio_rt", "serde-json"] }
-napi-derive = "2.16.12"
 
 [workspace.dependencies.quaint]
 path = "quaint"

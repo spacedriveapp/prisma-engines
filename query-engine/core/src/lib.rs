@@ -9,14 +9,12 @@ pub mod protocol;
 pub mod query_document;
 pub mod query_graph_builder;
 pub mod response_ir;
-pub mod telemetry;
 
 pub use self::{
     error::{CoreError, FieldConversionError},
     executor::{QueryExecutor, TransactionOptions},
     interactive_transactions::{ExtendedTransactionUserFacingError, TransactionError, TxId},
-    query_document::*,
-    telemetry::*,
+    query_document::*
 };
 pub use connector::{error::ConnectorError, Connector};
 

@@ -112,9 +112,6 @@ compile_error!("one of 'sqlite', 'postgresql', 'mysql' or 'mssql' features must 
 #[macro_use]
 mod macros;
 
-#[macro_use]
-extern crate metrics;
-
 #[cfg(feature = "bigdecimal")]
 extern crate bigdecimal_ as bigdecimal;
 
